@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
@@ -12,14 +13,14 @@ using System.Web.UI.WebControls;
 
 namespace BigDataASP.UploadData
 {
-    public partial class WebForm1 : System.Web.UI.Page
+    public partial class NadhifaBigData : System.Web.UI.Page
     {
 
         public Dictionary<string, string> firstData = new Dictionary<string, string>();
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(!IsPostBack)
+            if (!IsPostBack)
             {
                 BindData();
                 BindCharts();
@@ -33,58 +34,11 @@ namespace BigDataASP.UploadData
         {
             //declare variables - edit these based on your particular situation   
             string ssqltable = "raw_data";
-            // make sure your sheet name is correct, here sheet name is sheet1,
-            //string myexceldataquery = "select \"No# Pesanan\" as no_order," + 
-            //                                 " \"Status Pesanan\" as order_status,"+
-            //                                 "\"Status Pembatalan// Pengembalian\" as return_status," +
-            //                                 "\"No# Resi\" as recepit," +
-            //                                 "\"Opsi Pengiriman\" as delivery_options," +
-            //                                 "\"Antar ke counter// pick-up\" as counter_or_pickup," +
-            //                                 "\"Pesanan Harus Dikirimkan Sebelum (Menghindari keterlambatan)\" as deliver_before," +
-            //                                 "\"Waktu Pengiriman Diatur\" as arranged_delivery_time," +
-            //                                 "\"Waktu Pesanan Dibuat\" as order_create_time ," +
-            //                                 "\"Waktu Pembayaran Dilakukan\" as payment_paid_time ," +
-            //                                 "\"SKU Induk\" as sku," +
-            //                                 "\"Nama Produk\" as product_name," +
-            //                                 "\"Nomor Referensi SKU\" as sku_reference ," +
-            //                                 "\"Nama Variasi\" as variation_name ," +
-            //                                 "\"Harga Awal\" as init_price ," +
-            //                                 "\"Harga Setelah Diskon\" as discount_price," +
-            //                                 "\"Jumlah\" as amount," +
-            //                                 "\"Total Harga Produk\" as total_price ," +
-            //                                 "\"Total Diskon\" as total_discount ," +
-            //                                 "\"Diskon Dari Penjual\" as seller_discount ," +
-            //                                 "\"Diskon Dari Shopee\" as shopee_discount ," +
-            //                                 "\"Berat Produk\" as product_weight," +
-            //                                 "\"Jumlah Produk di Pesan\" as ordered_product ," +
-            //                                 "\"Total Berat\" as total_weight ," +
-            //                                 "\"Voucher Ditanggung Penjual\" as seller_voucher ," +
-            //                                 "\"Cashback Koin\" as cashback_coin ," +
-            //                                 "\"Voucher Ditanggung Shopee\" as shopee_voucher ," +
-            //                                 "\"Paket Diskon\" as discount_packet ," +
-            //                                 "\"Paket Diskon (Diskon dari Shopee)\" as shopee_discount_packet," +
-            //                                 "\"Paket Diskon (Diskon dari Penjual)\" as seller_discount_packet," +
-            //                                 "\"Potongan Koin Shopee\" as shopee_coin_discount_packet," +
-            //                                 "\"Diskon Kartu Kredit\" as credit_card_discount ," +
-            //                                 "\"Ongkos Kirim Dibayar oleh Pembeli\" as postal_fee," +
-            //                                 "\"Total Pembayaran\" as total_payment," +
-            //                                 "\"Perkiraan Ongkos Kirim\" as estimated_postal_fee ," +
-            //                                 "\"Catatan dari Pembeli\" as customer_note ," +
-            //                                 "\"Catatan\" as note," +
-            //                                 "\"Username (Pembeli)\" as costumer_id," +
-            //                                 "\"Nama Penerima\" as customer_name ," +
-            //                                 "\"No# Telepon\" as customer_phone_number," +
-            //                                 "\"Alamat Pengiriman\" as customer_address," +
-            //                                 "\"Kota/Kabupaten\" as customer_city," +
-            //                                 "\"Provinsi\" as customer_province," +
-            //                                 "\"Waktu Pesanan Selesai\" as order_finished_time" +
-            //                                 " from [Sheet1$]";
             string excelDataQuery = "Select * from [Sheet1$]";
 
             try
             {
-                //create our connection strings
-                string sexcelconnectionstring = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + excelFilePath +";Extended Properties='Excel 12.0;'";
+                string sexcelconnectionstring = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + excelFilePath + ";Extended Properties='Excel 12.0;'";
                 string ssqlconnectionstring = "Data Source=localhost;Initial Catalog=nadhifa_ts;Integrated Security=True";
                 //execute a query to erase any previous data from our destination table   
                 string sclearsql = "delete from " + ssqltable;
@@ -126,7 +80,7 @@ namespace BigDataASP.UploadData
         {
 
             DataTable dt = new DataTable();
-            dt = queryBuilder.selectForGridView("clean_raw_data");
+            dt = queryBuilder.customSelectQuery("Select * from GetAllData");
             RptDataTransaksi.DataSource = dt;
             RptDataTransaksi.DataBind();
         }
@@ -214,8 +168,6 @@ namespace BigDataASP.UploadData
             productProvinceData.Value = JsonConvert.SerializeObject(productprovinceAmount);
 
 
-
-
             //foreach(DataRow row in topPatient.Rows)
             //{
             //    decimal val = decimal.Parse(row["spending_power"].ToString());
@@ -225,7 +177,39 @@ namespace BigDataASP.UploadData
             //BarChart1.Series.Add(new AjaxControlToolkit.BarChartSeries { Name = ddlCountry2.SelectedItem.Value, Data = y });
         }
 
+        protected void OnFilterDataClick(object sender, EventArgs e)
+        {
+            if (from_date.Text == "" || to_date.Text == "")
+            {
+                filterDataFailed.Visible = true;
+                return;
+            }
 
+            filterDataFailed.Visible = false;
+            using (SqlConnection con = new SqlConnection("Data Source=localhost;Initial Catalog=nadhifa_ts;Integrated Security=True"))
+            {
+                using (SqlCommand cmd = new SqlCommand("GetFilterDateData"))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@from", SqlDbType.Date).Value = from_date.Text;
+                    cmd.Parameters.Add("@to", SqlDbType.Date).Value = to_date.Text;
 
+                    using (SqlDataAdapter sda = new SqlDataAdapter())
+                    {
+                        cmd.Connection = con;
+                        sda.SelectCommand = cmd;
+                        using (DataTable dt = new DataTable())
+                        {
+                            sda.Fill(dt);
+                            RptDataTransaksi.DataSource = dt;
+                            RptDataTransaksi.DataBind();
+                            this.BindCharts();
+                        }
+                    }
+
+                }
+            }
+
+        }
     }
 }
