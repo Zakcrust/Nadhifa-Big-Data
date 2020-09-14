@@ -297,5 +297,18 @@ namespace Nadhifa_Library.CRUD.QueryBuilderClass
 
             return "";
         }
+
+        public void ExecuteNonQueryProcedures(string procedure_name)
+        {
+            SqlConnection con = new SqlConnection(connection_string);
+            SqlCommand cmd = new SqlCommand(procedure_name, con);
+            cmd.CommandType = CommandType.StoredProcedure;
+            con.Open();
+            cmd.ExecuteNonQuery();
+            cmd.Dispose();
+            con.Close();
+        }
+
     }
+
 }

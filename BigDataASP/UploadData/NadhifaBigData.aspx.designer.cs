@@ -157,6 +157,33 @@ namespace BigDataASP.UploadData {
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl topProvinceChart;
         
         /// <summary>
+        /// productName control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField productName;
+        
+        /// <summary>
+        /// productPrice control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField productPrice;
+        
+        /// <summary>
+        /// summaryProductChart control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl summaryProductChart;
+        
+        /// <summary>
         /// from_date control.
         /// </summary>
         /// <remarks>

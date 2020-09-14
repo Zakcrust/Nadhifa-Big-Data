@@ -39,6 +39,16 @@
 
 <asp:Content runat ="server" ContentPlaceHolderID="MainContent">
     <link rel="stylesheet" href="../Content/bootstrap.css" />
+
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -58,8 +68,9 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#myTable').DataTable();
-
+            $("#myTable_wrapper").addClass("text-light");
             Chart.defaults.global.legend.display = false;
+            Chart.defaults.global.defaultFontColor = 'white';
             var decoded_customer_name = JSON.parse(document.getElementById('<%= customer_name.ClientID%>').value);
             var decoded_spending_power = JSON.parse(document.getElementById('<%= spending_power.ClientID%>').value);
             var decoded_topProductData = JSON.parse(document.getElementById('<%= topProductData.ClientID%>').value);
@@ -68,7 +79,8 @@
             var decoded_productCityData = JSON.parse(document.getElementById('<%= productcityData.ClientID%>').value);
             var decoded_topProvinceData = JSON.parse(document.getElementById('<%= topProvinceData.ClientID%>').value);
             var decoded_productProvinceData = JSON.parse(document.getElementById('<%= productProvinceData.ClientID%>').value);
-
+            var decoded_productName = JSON.parse(document.getElementById('<%= productName.ClientID %>').value);
+            var decoded_productPrice = JSON.parse(document.getElementById('<%= productPrice.ClientID %>').value);
 
 
             var patientDataChart = document.getElementById('MainContent_myChart').getContext('2d');
@@ -103,7 +115,10 @@
                 },
 
                 // Configuration options go here
-                options: {}
+                // Configuration options go here
+                options: {
+                    
+                }
             });
 
 
@@ -139,7 +154,10 @@
                 },
 
                 // Configuration options go here
-                options: {}
+                // Configuration options go here
+                options: {
+                    
+                }
             });
 
             var topCityDataChart = document.getElementById('MainContent_topCityChart').getContext('2d');
@@ -174,7 +192,10 @@
                 },
 
                 // Configuration options go here
-                options: {}
+                // Configuration options go here
+                options: {
+                    
+                }
             });
 
             var topProvinceDataChart = document.getElementById('MainContent_topProvinceChart').getContext('2d');
@@ -210,15 +231,47 @@
 
                 // Configuration options go here
                 options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
+                    
                 }
             });
+
+            var summaryProductChart = document.getElementById('MainContent_summaryProductChart').getContext('2d');
+            var TopProductchart = new Chart(summaryProductChart, {
+                // The type of chart we want to create
+                type: 'doughnut',
+
+                // The data for our dataset
+                data: {
+                    labels: decoded_productName,
+                    datasets: [{
+                        //label: 'Top Province',
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 3,
+                        data: decoded_productPrice
+                    }]
+                },
+
+                // Configuration options go here
+                options: {
+                    
+                }
+            });
+
 
             var patientData = {
                 labels: decoded_customer_name,
@@ -320,7 +373,16 @@
                 }]
             }
 
-
+            VANTA.NET({
+            el: "body",
+            mouseControls: false,
+            touchControls: false,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 0.80,
+            scaleMobile: 0.80
+            })
         });
 
         $("#home").click(function () {
@@ -331,23 +393,15 @@
     <script src="https://threejs.org/build/three.js"></script>
     <script src="../Scripts/vanta.net.min.js"></script>
     <script defer type="text/javascript">
-        //VANTA.NET({
-        //    el: "body",
-        //    mouseControls: false,
-        //    touchControls: false,
-        //    gyroControls: false,
-        //    minHeight: 200.00,
-        //    minWidth: 200.00,
-        //    scale: 0.30,
-        //    scaleMobile: 0.30
-        //    })
+        
     </script>
+
 
         <div class="container">
             <h1 ><span class="label label-info">Upload file excel (xls, xlsx)</span></h1>
             <br />
             <br />
-            <asp:FileUpload  ID="FileUpload1"
+            <asp:FileUpload CssClass="text-light" ID="FileUpload1"
                 runat="server"></asp:FileUpload>
 
                 <asp:Button ID="UploadButton"
@@ -368,12 +422,13 @@
     <div class="separator"></div>
 
 
-    <div class="container text-success">
+    <div class="container text-light">
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#home">Pasien Terloyal</a></li>
                 <li><a data-toggle="tab" href="#menu2">Produk Best Seller</a></li>
                 <li><a data-toggle="tab" href="#menu3">Kota/Kabupaten Terbanyak</a></li>
                 <li><a data-toggle="tab" href="#menu4">Provinsi Terbanyak</a></li>
+                <li><a data-toggle="tab" href="#menu5">Summary Sale Product</a></li>
             </ul>
 
             <div class="tab-content">
@@ -389,6 +444,7 @@
                     <canvas runat="server" id="myChart">
 
                         </canvas>
+<%--                    <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="PasienTerloyal" OnCommand="ExportToCSV" />--%>
                 </div>
                 <div id="menu2" class="tab-pane fade text-center">
                     <h3>Produk Best Seller</h3>
@@ -400,6 +456,7 @@
                     <canvas runat="server" id="topProductChart">
 
                         </canvas>
+                    <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="BestSeller" OnCommand="ExportToCSV" />--%>
                 </div>
                 <div id="menu3" class="tab-pane fade text-center">
                     <h3>Kota/Kabupaten Terbanyak</h3>
@@ -411,6 +468,7 @@
                     <canvas runat="server" id="topCityChart">
 
                         </canvas>
+                    <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="TopCities" OnCommand="ExportToCSV" />--%>
                 </div>
                 <div id="menu4" class="tab-pane fade text-center">
                     <h3>Provinsi Terbanyak</h3>
@@ -422,23 +480,38 @@
                     <canvas runat="server" id="topProvinceChart">
 
                         </canvas>
+<%--                    <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="TopProvinces" OnCommand="ExportToCSV" />--%>
+                </div>
+                <div id="menu5" class="tab-pane fade text-center">
+                    <h3>Summary Sale Product</h3>
+                    <h1><span id="summarySaleProduct" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["total_product_price"] %>     <span class="glyphicon glyphicon-star" /></span>
+                    </h1>
+                    <br />
+                    <asp:HiddenField ID="productName" runat="server"></asp:HiddenField>
+                    <asp:HiddenField ID="productPrice" runat="server"></asp:HiddenField>
+                    <canvas runat="server" id="summaryProductChart">
+
+                        </canvas>
+                    <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="SummarySaleProduct" OnCommand="ExportToCSV" />--%>
                 </div>
             </div>
         </div>
 
         
-        <div class="separator"></div>
+        <div class="separator">
+            <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-danger" Text="Export to CSV" CommandName="AllCustomerData" OnCommand="ExportToCSV" />
+        </div>
 
         
 
         <div class="container-fluid">
             <div class="form-inline">
                 <div class="form-group">
-                    <asp:Label runat="server" Text="From :" />
+                    <asp:Label CssClass="text-light" runat="server" Text="From :" />
                     <asp:TextBox CssClass="form-control" runat="server" ID="from_date" TextMode="Date"></asp:TextBox><br />
                 </div>
                 <div class="form-group">
-                    <asp:Label runat="server" Text="To :" />
+                    <asp:Label CssClass="text-light" runat="server" Text="To :" />
                     <asp:TextBox CssClass="form-control" runat="server" ID="to_date" TextMode="Date"></asp:TextBox><br />
                 </div>
 
@@ -450,8 +523,8 @@
 
             <asp:Repeater runat="server" ID="RptDataTransaksi">
                 <HeaderTemplate>
-                    <table id="myTable" class="table table-striped table-bordered" style="width: 100%">
-                        <thead>
+                    <table id="myTable" class="table table-striped table-bordered" style="width: 100%;overflow:auto">
+                        <thead class="text-light">
                             <tr>
                                 <th>Nomor order</th>
                                 <th>Status Pesanan</th>
@@ -555,7 +628,6 @@
                 </FooterTemplate>
             </asp:Repeater>
         </div>
-
         <script type="text/javascript">
         </script>
 

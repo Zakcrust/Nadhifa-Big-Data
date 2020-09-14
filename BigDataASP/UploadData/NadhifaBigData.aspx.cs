@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -34,7 +35,7 @@ namespace BigDataASP.UploadData
         {
             //declare variables - edit these based on your particular situation   
             string ssqltable = "raw_data";
-            string excelDataQuery = "Select * from [Sheet1$]";
+            string excelDataQuery = "Select * from [orders$]";
 
             try
             {
@@ -54,6 +55,7 @@ namespace BigDataASP.UploadData
                 OleDbDataReader dr = oledbcmd.ExecuteReader();
                 SqlBulkCopy bulkcopy = new SqlBulkCopy(ssqlconnectionstring);
                 bulkcopy.DestinationTableName = ssqltable;
+
                 while (dr.Read())
                 {
                     bulkcopy.WriteToServer(dr);
@@ -68,11 +70,21 @@ namespace BigDataASP.UploadData
                 sqlcmd.ExecuteNonQuery();
                 sqlconn.Close();
                 UploadStatusLabel.Text = "File imported into sql server successfully.";
+
+                
             }
             catch (Exception ex)
             {
                 exceltosqlException.Text = ex.ToString();
+                BindData();
+                BindCharts();
             }
+
+            queryBuilder.ExecuteNonQueryProcedures("Sp_SanitizeData");
+
+            BindData();
+            BindCharts();
+
         }
 
 
@@ -88,6 +100,8 @@ namespace BigDataASP.UploadData
 
         public void BindCharts()
         {
+            firstData.Clear();
+
             DataTable topPatient = new DataTable();
             topPatient = queryBuilder.customSelectQuery("SELECT * FROM [TOP SPENDING]");
 
@@ -100,6 +114,16 @@ namespace BigDataASP.UploadData
             DataTable topProvinces = new DataTable();
             topProvinces = queryBuilder.customSelectQuery("SELECT * FROM [Top Provinces]");
 
+            DataTable summaryProducts = new DataTable();
+            summaryProducts = queryBuilder.customSelectQuery("SELECT TOP 5 * FROM [Summary Sale Product]");
+
+            DataTable restOfSummaryProducts = new DataTable();
+            restOfSummaryProducts = queryBuilder.customSelectQuery("SELECT * FROM RestOfSummarySale");
+
+            DataTable totalProductPrice = new DataTable();
+            totalProductPrice = queryBuilder.customSelectQuery("SELECT SUM(product_total_price) as total_price FROM [Summary Sale Product]");
+
+
             firstData.Add("customer_name", topPatient.Rows[0]["customer_name"].ToString());
             firstData.Add("spending_power", topPatient.Rows[0]["spending_power"].ToString());
 
@@ -111,6 +135,12 @@ namespace BigDataASP.UploadData
 
             firstData.Add("province", topProvinces.Rows[0]["province"].ToString());
             firstData.Add("province_order_amount", topProvinces.Rows[0]["order_amount"].ToString());
+
+            int totalPrice = Convert.ToInt32(totalProductPrice.Rows[0]["total_price"].ToString());
+            string strPrice = string.Format("{0:C}", Convert.ToDecimal(totalPrice));
+
+            firstData.Add("total_product_price", strPrice.Replace("$","Rp."));
+
 
 
             //DataRow firstData = topPatient.Rows[0];
@@ -126,6 +156,10 @@ namespace BigDataASP.UploadData
 
             List<string> topProvince = new List<string>();
             List<string> productprovinceAmount = new List<string>();
+
+            List<string> productName = new List<string>();
+            List<string> productPrice = new List<string>();
+
 
 
             foreach (DataRow row in topPatient.Rows)
@@ -144,7 +178,6 @@ namespace BigDataASP.UploadData
             {
                 topCity.Add(row["city"].ToString());
                 productcityAmount.Add(row["order_amount"].ToString());
-
             }
 
             foreach (DataRow row in topProvinces.Rows)
@@ -153,6 +186,15 @@ namespace BigDataASP.UploadData
                 productprovinceAmount.Add(row["order_amount"].ToString());
 
             }
+
+            foreach (DataRow row in summaryProducts.Rows)
+            {
+                productName.Add(row["product"].ToString());
+                productPrice.Add(row["product_total_price"].ToString());
+            }
+
+            productName.Add(restOfSummaryProducts.Rows[0]["rest"].ToString());
+            productPrice.Add(restOfSummaryProducts.Rows[0]["total_price"].ToString());
 
 
             this.customer_name.Value = JsonConvert.SerializeObject(customer_name);
@@ -166,6 +208,9 @@ namespace BigDataASP.UploadData
 
             topProvinceData.Value = JsonConvert.SerializeObject(topProvince);
             productProvinceData.Value = JsonConvert.SerializeObject(productprovinceAmount);
+
+            this.productName.Value = JsonConvert.SerializeObject(productName);
+            this.productPrice.Value = JsonConvert.SerializeObject(productPrice);
 
 
             //foreach(DataRow row in topPatient.Rows)
@@ -184,6 +229,7 @@ namespace BigDataASP.UploadData
                 filterDataFailed.Visible = true;
                 return;
             }
+
 
             filterDataFailed.Visible = false;
             using (SqlConnection con = new SqlConnection("Data Source=localhost;Initial Catalog=nadhifa_ts;Integrated Security=True"))
@@ -210,6 +256,72 @@ namespace BigDataASP.UploadData
                 }
             }
 
+        }
+
+        protected void ExportToCSV(object sender, CommandEventArgs e)
+        {
+            DataTable dt = new DataTable();
+            string filename = "";
+            switch(e.CommandName.ToString())
+            {
+                case "PasienTerloyal":
+                    dt = queryBuilder.customSelectQuery("SELECT * FROM [TOP SPENDING]");
+                    filename += "PasienTerloyal";
+                    break;
+                case "BestSeller":
+                    dt = queryBuilder.customSelectQuery("SELECT * FROM [Top Selling Product]");
+                    filename += "BestSeller";
+                    break;
+                case "TopCities":
+                    dt = queryBuilder.customSelectQuery("SELECT * FROM [TOP Cities]");
+                    filename += "TopCities";
+                    break;
+                case "TopProvinces":
+                    dt = queryBuilder.customSelectQuery("SELECT * FROM [TOP Provinces]");
+                    filename += "TopProvince";
+                    break;
+                case "SummarySaleProduct":
+                    dt = queryBuilder.customSelectQuery("SELECT * FROM [Summary Sale Product]");
+                    filename += "SummarySaleProduct";
+                    break;
+                case "AllCustomerData":
+                    dt = queryBuilder.customSelectQuery("SELECT * FROM get_top_customer_data WHERE spending_power IS NOT NULL");
+                    filename += "AllCustomerData";
+                    break;
+            }
+            filename += ".csv";
+            string csv = string.Empty;
+
+            foreach (DataColumn column in dt.Columns)
+            {
+                //Add the Header row for CSV file.
+                csv += column.ColumnName + ',';
+            }
+
+            //Add new line.
+            csv += "\r\n";
+
+            foreach (DataRow row in dt.Rows)
+            {
+                foreach (DataColumn column in dt.Columns)
+                {
+                    //Add the Data rows.
+                    csv += row[column.ColumnName].ToString().Replace(",", ";") + ',';
+                }
+
+                //Add new line.
+                csv += "\r\n";
+            }
+
+            //Download the CSV file.
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment;filename="+filename);
+            Response.Charset = "";
+            Response.ContentType = "application/text";
+            Response.Output.Write(csv);
+            Response.Flush();
+            Response.End();
         }
     }
 }
