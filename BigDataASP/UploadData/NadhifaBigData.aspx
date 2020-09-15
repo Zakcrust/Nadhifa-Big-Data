@@ -32,12 +32,14 @@
         {
             // Notify the user that a file was not uploaded.
             UploadStatusLabel.Text = "You did not specify a file to upload.";
+            BindData();
+            BindCharts();
         }
     }
 </script>
 
 
-<asp:Content runat ="server" ContentPlaceHolderID="MainContent">
+<asp:Content runat ="server" ContentPlaceHolderID="MainContent" CssClass="no-js">
     <link rel="stylesheet" href="../Content/bootstrap.css" />
 
     <!-- CSS only -->
