@@ -64,6 +64,9 @@
             margin-top : 100px;
             margin-bottom : 100px;
         }
+        body {
+            background-color:#23153C;
+        }
     </style>
 
 
@@ -375,16 +378,16 @@
                 }]
             }
 
-            VANTA.NET({
-            el: "body",
-            mouseControls: false,
-            touchControls: false,
-            gyroControls: false,
-            minHeight: 200.00,
-            minWidth: 200.00,
-            scale: 0.80,
-            scaleMobile: 0.80
-            })
+            //VANTA.NET({
+            //el: "body",
+            //mouseControls: false,
+            //touchControls: false,
+            //gyroControls: false,
+            //minHeight: 200.00,
+            //minWidth: 200.00,
+            //scale: 0.80,
+            //scaleMobile: 0.80
+            //})
         });
 
         $("#home").click(function () {

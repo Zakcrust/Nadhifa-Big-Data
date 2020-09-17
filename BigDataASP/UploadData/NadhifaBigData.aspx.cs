@@ -29,7 +29,7 @@ namespace BigDataASP.UploadData
         }
 
 
-        QueryBuilder queryBuilder = new QueryBuilder("Data Source=localhost;Initial Catalog=nadhifa_ts;Integrated Security=True");
+        QueryBuilder queryBuilder = new QueryBuilder("Data Source=localhost;Initial Catalog=nadhifa_ts;Integrated Security=True;");
 
         public void ImportDataFromExcel(string excelFilePath)
         {
