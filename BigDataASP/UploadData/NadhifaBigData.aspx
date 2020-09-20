@@ -1,4 +1,4 @@
-﻿<%@ Title="Nadhifa Big Data" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="NadhifaBigData.aspx.cs" Inherits="BigDataASP.UploadData.NadhifaBigData" %>
+﻿<%@  Title="Nadhifa Big Data" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="NadhifaBigData.aspx.cs" Inherits="BigDataASP.UploadData.NadhifaBigData" %>
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajaxToolkit" %>
 
@@ -6,12 +6,21 @@
 
     protected void UploadButton_Click(object sender, EventArgs e)
     {
-        
+
         string saveDir = @"\Uploads\";
         string appPath = Request.PhysicalApplicationPath;
-
+        
         if (FileUpload1.HasFile)
         {
+            string[] fileExtension = FileUpload1.FileName.Split('.');
+            if(fileExtension[fileExtension.Length - 1] != ".xlsx")
+            {
+                UploadStatusLabel.Text = "file must be in .xlsx format";
+                BindData();
+                BindCharts();
+                return;
+            }
+
             string savePath = appPath + saveDir +
                 Server.HtmlEncode(FileUpload1.FileName);
 
@@ -39,7 +48,7 @@
 </script>
 
 
-<asp:Content runat ="server" ContentPlaceHolderID="MainContent" CssClass="no-js">
+<asp:Content runat="server" ContentPlaceHolderID="MainContent" CssClass="no-js">
     <link rel="stylesheet" href="../Content/bootstrap.css" />
 
     <!-- CSS only -->
@@ -61,11 +70,18 @@
     <script type="text/javascript" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" defer="defer"></script>
     <style type="text/css">
         .separator {
-            margin-top : 100px;
-            margin-bottom : 100px;
+            margin-top: 100px;
+            margin-bottom: 100px;
         }
+
         body {
-            background-color:#23153C;
+            /*background-color:#D2616E;*/
+            background-color: #ffffff;
+        }
+
+        .logo {
+            max-width: 253px;
+            max-height: 83px;
         }
     </style>
 
@@ -73,9 +89,9 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $('#myTable').DataTable();
-            $("#myTable_wrapper").addClass("text-light");
+            //$("#myTable_wrapper").addClass("");
             Chart.defaults.global.legend.display = false;
-            Chart.defaults.global.defaultFontColor = 'white';
+            //Chart.defaults.global.defaultFontColor = 'white';
             var decoded_customer_name = JSON.parse(document.getElementById('<%= customer_name.ClientID%>').value);
             var decoded_spending_power = JSON.parse(document.getElementById('<%= spending_power.ClientID%>').value);
             var decoded_topProductData = JSON.parse(document.getElementById('<%= topProductData.ClientID%>').value);
@@ -122,7 +138,7 @@
                 // Configuration options go here
                 // Configuration options go here
                 options: {
-                    
+
                 }
             });
 
@@ -161,7 +177,7 @@
                 // Configuration options go here
                 // Configuration options go here
                 options: {
-                    
+
                 }
             });
 
@@ -199,7 +215,7 @@
                 // Configuration options go here
                 // Configuration options go here
                 options: {
-                    
+
                 }
             });
 
@@ -236,7 +252,7 @@
 
                 // Configuration options go here
                 options: {
-                    
+
                 }
             });
 
@@ -273,7 +289,7 @@
 
                 // Configuration options go here
                 options: {
-                    
+
                 }
             });
 
@@ -398,18 +414,23 @@
     <script src="https://threejs.org/build/three.js"></script>
     <script src="../Scripts/vanta.net.min.js"></script>
     <script defer type="text/javascript">
-        
-    </script>
+
+</script>
 
 
-        <div class="container">
-            <h1 ><span class="label label-info">Upload file excel (xls, xlsx)</span></h1>
+    <div class="container header">
+        <div class="col-md-6">
+            <asp:Image CssClass="logo" runat="server" ImageUrl="https://www.nadhifabeauty.com/wp-content/uploads/2019/07/logo-baru-nadhifa.png" />
+        </div>
+
+        <div class="col-md-12">
+            <h1><span class="label label-info">Upload file excel (xlsx)</span></h1>
             <br />
             <br />
-            <asp:FileUpload CssClass="text-light" ID="FileUpload1"
+            <asp:FileUpload ID="FileUpload1"
                 runat="server"></asp:FileUpload>
 
-                <asp:Button ID="UploadButton"
+            <asp:Button ID="UploadButton"
                 Text="Upload file"
                 OnClick="UploadButton_Click"
                 CssClass="btn btn-primary btn-lg btn-block"
@@ -421,226 +442,218 @@
             </asp:Label>
             <asp:Label ID="exceltosqlException" runat="server">
             </asp:Label>
-
         </div>
+
+    </div>
 
     <div class="separator"></div>
 
 
-    <div class="container text-light">
-            <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#home">Pasien Terloyal</a></li>
-                <li><a data-toggle="tab" href="#menu2">Produk Best Seller</a></li>
-                <li><a data-toggle="tab" href="#menu3">Kota/Kabupaten Terbanyak</a></li>
-                <li><a data-toggle="tab" href="#menu4">Provinsi Terbanyak</a></li>
-                <li><a data-toggle="tab" href="#menu5">Summary Sale Product</a></li>
-            </ul>
+    <div class="container">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#home">Pasien Terloyal</a></li>
+            <li><a data-toggle="tab" href="#menu2">Produk Best Seller</a></li>
+            <li><a data-toggle="tab" href="#menu3">Kota/Kabupaten Terbanyak</a></li>
+            <li><a data-toggle="tab" href="#menu4">Provinsi Terbanyak</a></li>
+            <li><a data-toggle="tab" href="#menu5">Summary Sale Product</a></li>
+        </ul>
 
-            <div class="tab-content">
-                <div id="home" class="tab-pane fade in active text-center">
-                    <h3>Pasien Terloyal</h3>
-                    <h1><span id="topPatient" class="label label-success text-center !important" ><span class="glyphicon glyphicon-star" />     <%= firstData["customer_name"] %>     <span class="glyphicon glyphicon-star" /></span>
-                    </h1>
-                    <br />
+        <div class="tab-content">
+            <div id="home" class="tab-pane fade in active text-center">
+                <h3>Pasien Terloyal</h3>
+                <h1><span id="topPatient" class="label label-success text-center !important"><span class="glyphicon glyphicon-star" />     <%= firstData["customer_name"] %>     <span class="glyphicon glyphicon-star" /></span>
+                </h1>
+                <br />
 
-                    <asp:HiddenField ID="customer_name" runat="server"></asp:HiddenField>
-                    <asp:HiddenField ID="spending_power" runat="server"></asp:HiddenField>
+                <asp:HiddenField ID="customer_name" runat="server"></asp:HiddenField>
+                <asp:HiddenField ID="spending_power" runat="server"></asp:HiddenField>
 
-                    <canvas runat="server" id="myChart">
-
-                        </canvas>
-<%--                    <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="PasienTerloyal" OnCommand="ExportToCSV" />--%>
-                </div>
-                <div id="menu2" class="tab-pane fade text-center">
-                    <h3>Produk Best Seller</h3>
-                    <h1><span id="topProduct" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["top_product"] %>     <span class="glyphicon glyphicon-star" /></span>
-                    </h1>
-                    <br />
-                    <asp:HiddenField ID="topProductData" runat="server"></asp:HiddenField>
-                    <asp:HiddenField ID="productAmountData" runat="server"></asp:HiddenField>
-                    <canvas runat="server" id="topProductChart">
-
-                        </canvas>
-                    <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="BestSeller" OnCommand="ExportToCSV" />--%>
-                </div>
-                <div id="menu3" class="tab-pane fade text-center">
-                    <h3>Kota/Kabupaten Terbanyak</h3>
-                    <h1><span id="topCity" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["city"] %>     <span class="glyphicon glyphicon-star" /></span>
-                    </h1>
-                    <br />
-                    <asp:HiddenField ID="topCityData" runat="server"></asp:HiddenField>
-                    <asp:HiddenField ID="productcityData" runat="server"></asp:HiddenField>
-                    <canvas runat="server" id="topCityChart">
-
-                        </canvas>
-                    <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="TopCities" OnCommand="ExportToCSV" />--%>
-                </div>
-                <div id="menu4" class="tab-pane fade text-center">
-                    <h3>Provinsi Terbanyak</h3>
-                    <h1><span id="topProvince" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["province"] %>     <span class="glyphicon glyphicon-star" /></span>
-                    </h1>
-                    <br />
-                    <asp:HiddenField ID="topProvinceData" runat="server"></asp:HiddenField>
-                    <asp:HiddenField ID="productProvinceData" runat="server"></asp:HiddenField>
-                    <canvas runat="server" id="topProvinceChart">
-
-                        </canvas>
-<%--                    <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="TopProvinces" OnCommand="ExportToCSV" />--%>
-                </div>
-                <div id="menu5" class="tab-pane fade text-center">
-                    <h3>Summary Sale Product</h3>
-                    <h1><span id="summarySaleProduct" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["total_product_price"] %>     <span class="glyphicon glyphicon-star" /></span>
-                    </h1>
-                    <br />
-                    <asp:HiddenField ID="productName" runat="server"></asp:HiddenField>
-                    <asp:HiddenField ID="productPrice" runat="server"></asp:HiddenField>
-                    <canvas runat="server" id="summaryProductChart">
-
-                        </canvas>
-                    <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="SummarySaleProduct" OnCommand="ExportToCSV" />--%>
-                </div>
+                <canvas runat="server" id="myChart"></canvas>
+                <%--                    <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="PasienTerloyal" OnCommand="ExportToCSV" />--%>
+            </div>
+            <div id="menu2" class="tab-pane fade text-center">
+                <h3>Produk Best Seller</h3>
+                <h1><span id="topProduct" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["top_product"] %>     <span class="glyphicon glyphicon-star" /></span>
+                </h1>
+                <br />
+                <asp:HiddenField ID="topProductData" runat="server"></asp:HiddenField>
+                <asp:HiddenField ID="productAmountData" runat="server"></asp:HiddenField>
+                <canvas runat="server" id="topProductChart"></canvas>
+                <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="BestSeller" OnCommand="ExportToCSV" />--%>
+            </div>
+            <div id="menu3" class="tab-pane fade text-center">
+                <h3>Kota/Kabupaten Terbanyak</h3>
+                <h1><span id="topCity" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["city"] %>     <span class="glyphicon glyphicon-star" /></span>
+                </h1>
+                <br />
+                <asp:HiddenField ID="topCityData" runat="server"></asp:HiddenField>
+                <asp:HiddenField ID="productcityData" runat="server"></asp:HiddenField>
+                <canvas runat="server" id="topCityChart"></canvas>
+                <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="TopCities" OnCommand="ExportToCSV" />--%>
+            </div>
+            <div id="menu4" class="tab-pane fade text-center">
+                <h3>Provinsi Terbanyak</h3>
+                <h1><span id="topProvince" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["province"] %>     <span class="glyphicon glyphicon-star" /></span>
+                </h1>
+                <br />
+                <asp:HiddenField ID="topProvinceData" runat="server"></asp:HiddenField>
+                <asp:HiddenField ID="productProvinceData" runat="server"></asp:HiddenField>
+                <canvas runat="server" id="topProvinceChart"></canvas>
+                <%--                    <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="TopProvinces" OnCommand="ExportToCSV" />--%>
+            </div>
+            <div id="menu5" class="tab-pane fade text-center">
+                <h3>Summary Sale Product</h3>
+                <h1><span id="summarySaleProduct" class="label label-success text-center"><span class="glyphicon glyphicon-star" />     <%= firstData["total_product_price"] %>     <span class="glyphicon glyphicon-star" /></span>
+                </h1>
+                <br />
+                <asp:HiddenField ID="productName" runat="server"></asp:HiddenField>
+                <asp:HiddenField ID="productPrice" runat="server"></asp:HiddenField>
+                <canvas runat="server" id="summaryProductChart"></canvas>
+                <%--<asp:Button runat="server" CssClass="btn btn-lg btn-block btn-primary" Text="Export to CSV" CommandName="SummarySaleProduct" OnCommand="ExportToCSV" />--%>
             </div>
         </div>
+    </div>
 
-        
-        <div class="separator">
-            <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-danger" Text="Export to CSV" CommandName="AllCustomerData" OnCommand="ExportToCSV" />
-        </div>
 
-        
+    <div class="separator">
+        <asp:Button runat="server" CssClass="btn btn-lg btn-block btn-danger" Text="Export to CSV" CommandName="AllCustomerData" OnCommand="ExportToCSV" />
+    </div>
 
-        <div class="container-fluid">
-            <div class="form-inline">
-                <div class="form-group">
-                    <asp:Label CssClass="text-light" runat="server" Text="From :" />
-                    <asp:TextBox CssClass="form-control" runat="server" ID="from_date" TextMode="Date"></asp:TextBox><br />
-                </div>
-                <div class="form-group">
-                    <asp:Label CssClass="text-light" runat="server" Text="To :" />
-                    <asp:TextBox CssClass="form-control" runat="server" ID="to_date" TextMode="Date"></asp:TextBox><br />
-                </div>
 
-                <asp:Button runat="server" CssClass="btn btn-primary" Text="Filter" OnClick="OnFilterDataClick" /><br />
+
+    <div class="container-fluid">
+        <div class="form-inline">
+            <div class="form-group">
+                <asp:Label CssClass="" runat="server" Text="From :" />
+                <asp:TextBox CssClass="form-control" runat="server" ID="from_date" TextMode="Date"></asp:TextBox><br />
+            </div>
+            <div class="form-group">
+                <asp:Label CssClass="" runat="server" Text="To :" />
+                <asp:TextBox CssClass="form-control" runat="server" ID="to_date" TextMode="Date"></asp:TextBox><br />
             </div>
 
-            <h3><asp:Label runat="server" ID="filterDataFailed" CssClass="alert alert-danger" Text="Date must not empty." Visible="false" ></asp:Label></h3>
-            <br />
+            <asp:Button runat="server" CssClass="btn btn-primary" Text="Filter" OnClick="OnFilterDataClick" /><br />
+        </div>
 
-            <asp:Repeater runat="server" ID="RptDataTransaksi">
-                <HeaderTemplate>
-                    <table id="myTable" class="table table-striped table-bordered" style="width: 100%;overflow:auto">
-                        <thead class="text-light">
-                            <tr>
-                                <th>Nomor order</th>
-                                <th>Status Pesanan</th>
-                                <th>Status Pembatalan/ Pengembalian</th>
-                                <th>No. Resi</th>
-                                <th>Opsi Pengiriman</th>
-                                <th>Antar Ke Counter/ Pick-up</th>
-                                <th>Pesanan Harus Dikirim Sebelum</th>
-                                <th>Waktu Pengiriman Diatur</th>
-                                <th>Waktu Pesanan Dibuat</th>
-                                <th>Waktu Pembayaran Dilakukan</th>
-                                <th>SKU Induk</th>
-                                <th>Nama Produk</th>
-                                <th>Nomor Referensi SKU</th>
-                                <th>Nama Variasi</th>
-                                <th>Harga Awal</th>
-                                <th>Harga Setelah Diskom</th>
-                                <th>Jumlah</th>
-                                <th>Total Harga Produk</th>
-                                <th>Total Diskon</th>
-                                <th>Diskon Dari Penjual</th>
-                                <th>Diskon Dari Shopee</th>
-                                <th>Berat Produk</th>
-                                <th>Jumlah Produk Dipesan</th>
-                                <th>Total Berat</th>
-                                <th>Voucher Ditanggung Penjual</th>
-                                <th>Cashback Koin</th>
-                                <th>Voucher Ditanggung Shopee</th>
-                                <th>Paket Diskon</th>
-                                <th>Paket Diskon (Diskon dari Shopee)</th>
-                                <th>Paket Diskon (Diskon dari Penjual)</th>
-                                <th>Potongan Koin Shopee</th>
-                                <th>Diskon Kartu Kredit</th>
-                                <th>Ongkos Kirim Dibayar Oleh Pembeli</th>
-                                <th>Total Pembayaran</th>
-                                <th>Perkiraan Ongkos Kirim</th>
-                                <th>Catatan dari Pembeli</th>
-                                <th>Catatan</th>
-                                <th>Username (Pembeli)</th>
-                                <th>Nama Pembeli</th>
-                                <th>No. Telepon</th>
-                                <th>Alamat Pengiriman</th>
-                                <th>Kota/ Kabupaten</th>
-                                <th>Provinsi</th>
-                                <th>Waktu Pesanan Selesai</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                </HeaderTemplate>
-                <ItemTemplate>
-                    <tr>
-                        <td><%# Eval("no_order") %></td>
-                        <td><%# Eval("order_status") %></td>
-                        <td><%# Eval("return_status") %></td>
-                        <td><%# Eval("receipt") %></td>
-                        <td><%# Eval("delivery_options") %></td>
-                        <td><%# Eval("counter_or_pickup") %></td>
-                        <td><%# Eval("deliver_before") %></td>
-                        <td><%# Eval("arranged_delivery_time") %></td>
-                        <td><%# Eval("order_create_time") %></td>
-                        <td><%# Eval("payment_paid_time") %></td>
-                        <td><%# Eval("sku") %></td>
-                        <td><%# Eval("product_name") %></td>
-                        <td><%# Eval("sku_reference") %></td>
-                        <td><%# Eval("variation_name") %></td>
-                        <td><%# Eval("init_price") %></td>
-                        <td><%# Eval("discount_price") %></td>
-                        <td><%# Eval("amount") %></td>
-                        <td><%# Eval("total_price") %></td>
-                        <td><%# Eval("total_discount") %></td>
-                        <td><%# Eval("seller_discount") %></td>
-                        <td><%# Eval("shopee_discount") %></td>
-                        <td><%# Eval("product_weight") %></td>
-                        <td><%# Eval("ordered_product") %></td>
-                        <td><%# Eval("total_weight") %></td>
-                        <td><%# Eval("seller_voucher") %></td>
-                        <td><%# Eval("cashback_coin") %></td>
-                        <td><%# Eval("shopee_voucher") %></td>
-                        <td><%# Eval("discount_packet") %></td>
-                        <td><%# Eval("shopee_discount_packet") %></td>
-                        <td><%# Eval("seller_discount_packet") %></td>
-                        <td><%# Eval("shopee_coin_discount_packet") %></td>
-                        <td><%# Eval("credit_card_discount") %></td>
-                        <td><%# Eval("postal_fee") %></td>
-                        <td><%# Eval("total_payment") %></td>
-                        <td><%# Eval("estimated_postal_fee") %></td>
-                        <td><%# Eval("customer_note") %></td>
-                        <td><%# Eval("note") %></td>
-                        <td><%# Eval("customer_id") %></td>
-                        <td><%# Eval("customer_name") %></td>
-                        <td><%# Eval("customer_phone_number") %></td>
-                        <td><%# Eval("customer_address") %></td>
-                        <td><%# Eval("customer_city") %></td>
-                        <td><%# Eval("customer_province") %></td>
-                        <td><%# Eval("order_finished_time") %></td>
-                    </tr>
-                </ItemTemplate>
-                <FooterTemplate>
-                    </tbody>
+        <h3>
+            <asp:Label runat="server" ID="filterDataFailed" CssClass="alert alert-danger" Text="Date must not empty." Visible="false"></asp:Label></h3>
+        <br />
+
+        <asp:Repeater runat="server" ID="RptDataTransaksi">
+            <HeaderTemplate>
+                <table id="myTable" class="table table-striped table-bordered" style="width: 100%; overflow: auto">
+                    <thead class="">
+                        <tr>
+                            <th>Nomor order</th>
+                            <th>Status Pesanan</th>
+                            <th>Status Pembatalan/ Pengembalian</th>
+                            <th>No. Resi</th>
+                            <th>Opsi Pengiriman</th>
+                            <th>Antar Ke Counter/ Pick-up</th>
+                            <th>Pesanan Harus Dikirim Sebelum</th>
+                            <th>Waktu Pengiriman Diatur</th>
+                            <th>Waktu Pesanan Dibuat</th>
+                            <th>Waktu Pembayaran Dilakukan</th>
+                            <th>SKU Induk</th>
+                            <th>Nama Produk</th>
+                            <th>Nomor Referensi SKU</th>
+                            <th>Nama Variasi</th>
+                            <th>Harga Awal</th>
+                            <th>Harga Setelah Diskom</th>
+                            <th>Jumlah</th>
+                            <th>Total Harga Produk</th>
+                            <th>Total Diskon</th>
+                            <th>Diskon Dari Penjual</th>
+                            <th>Diskon Dari Shopee</th>
+                            <th>Berat Produk</th>
+                            <th>Jumlah Produk Dipesan</th>
+                            <th>Total Berat</th>
+                            <th>Voucher Ditanggung Penjual</th>
+                            <th>Cashback Koin</th>
+                            <th>Voucher Ditanggung Shopee</th>
+                            <th>Paket Diskon</th>
+                            <th>Paket Diskon (Diskon dari Shopee)</th>
+                            <th>Paket Diskon (Diskon dari Penjual)</th>
+                            <th>Potongan Koin Shopee</th>
+                            <th>Diskon Kartu Kredit</th>
+                            <th>Ongkos Kirim Dibayar Oleh Pembeli</th>
+                            <th>Total Pembayaran</th>
+                            <th>Perkiraan Ongkos Kirim</th>
+                            <th>Catatan dari Pembeli</th>
+                            <th>Catatan</th>
+                            <th>Username (Pembeli)</th>
+                            <th>Nama Pembeli</th>
+                            <th>No. Telepon</th>
+                            <th>Alamat Pengiriman</th>
+                            <th>Kota/ Kabupaten</th>
+                            <th>Provinsi</th>
+                            <th>Waktu Pesanan Selesai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            </HeaderTemplate>
+            <ItemTemplate>
+                <tr>
+                    <td><%# Eval("no_order") %></td>
+                    <td><%# Eval("order_status") %></td>
+                    <td><%# Eval("return_status") %></td>
+                    <td><%# Eval("receipt") %></td>
+                    <td><%# Eval("delivery_options") %></td>
+                    <td><%# Eval("counter_or_pickup") %></td>
+                    <td><%# Eval("deliver_before") %></td>
+                    <td><%# Eval("arranged_delivery_time") %></td>
+                    <td><%# Eval("order_create_time") %></td>
+                    <td><%# Eval("payment_paid_time") %></td>
+                    <td><%# Eval("sku") %></td>
+                    <td><%# Eval("product_name") %></td>
+                    <td><%# Eval("sku_reference") %></td>
+                    <td><%# Eval("variation_name") %></td>
+                    <td><%# Eval("init_price") %></td>
+                    <td><%# Eval("discount_price") %></td>
+                    <td><%# Eval("amount") %></td>
+                    <td><%# Eval("total_price") %></td>
+                    <td><%# Eval("total_discount") %></td>
+                    <td><%# Eval("seller_discount") %></td>
+                    <td><%# Eval("shopee_discount") %></td>
+                    <td><%# Eval("product_weight") %></td>
+                    <td><%# Eval("ordered_product") %></td>
+                    <td><%# Eval("total_weight") %></td>
+                    <td><%# Eval("seller_voucher") %></td>
+                    <td><%# Eval("cashback_coin") %></td>
+                    <td><%# Eval("shopee_voucher") %></td>
+                    <td><%# Eval("discount_packet") %></td>
+                    <td><%# Eval("shopee_discount_packet") %></td>
+                    <td><%# Eval("seller_discount_packet") %></td>
+                    <td><%# Eval("shopee_coin_discount_packet") %></td>
+                    <td><%# Eval("credit_card_discount") %></td>
+                    <td><%# Eval("postal_fee") %></td>
+                    <td><%# Eval("total_payment") %></td>
+                    <td><%# Eval("estimated_postal_fee") %></td>
+                    <td><%# Eval("customer_note") %></td>
+                    <td><%# Eval("note") %></td>
+                    <td><%# Eval("customer_id") %></td>
+                    <td><%# Eval("customer_name") %></td>
+                    <td><%# Eval("customer_phone_number") %></td>
+                    <td><%# Eval("customer_address") %></td>
+                    <td><%# Eval("customer_city") %></td>
+                    <td><%# Eval("customer_province") %></td>
+                    <td><%# Eval("order_finished_time") %></td>
+                </tr>
+            </ItemTemplate>
+            <FooterTemplate>
+                </tbody>
                         </table>
-                </FooterTemplate>
-            </asp:Repeater>
-        </div>
-        <script type="text/javascript">
-        </script>
+            </FooterTemplate>
+        </asp:Repeater>
+    </div>
+    <script type="text/javascript">
+</script>
 
 
 </asp:Content>
 
 
-        <%--<div class="col-md-6">
+<%--<div class="col-md-6">
             <div class="panel panel-primary">
                 <div class="panel-heading text-center">
                     <h3 class="panel-title text-center">Pasien Terloyal</h3>
