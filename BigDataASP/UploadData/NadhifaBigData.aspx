@@ -419,21 +419,26 @@
 
 
     <div class="container header">
-        <div class="col-md-6">
+        <div class="col-md-12 text-center">
             <asp:Image CssClass="logo" runat="server" ImageUrl="https://www.nadhifabeauty.com/wp-content/uploads/2019/07/logo-baru-nadhifa.png" />
         </div>
-
+        <div class="separator"></div>
+        <div class="col-md-12 text-center">
+            <h1><span class="label label-warning text-center !important">Upload Excel File (.xlsx)</span>
+                </h1>
+        </div>
         <div class="col-md-12">
-            <h1><span class="label label-info">Upload file excel (xlsx)</span></h1>
+            <%--<h1><span class="label label-info">Upload file excel (xlsx)</span></h1>
             <br />
-            <br />
-            <asp:FileUpload ID="FileUpload1"
+            <br />--%>
+            <asp:FileUpload ID="FileUpload1" CssClass="text-right" style="margin:auto;"
                 runat="server"></asp:FileUpload>
 
             <asp:Button ID="UploadButton"
                 Text="Upload file"
                 OnClick="UploadButton_Click"
                 CssClass="btn btn-primary btn-lg btn-block"
+                style="margin:auto;"
                 runat="server"></asp:Button>
             <br />
             <br />
