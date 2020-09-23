@@ -83,12 +83,17 @@
             max-width: 253px;
             max-height: 83px;
         }
+
+        .label-success {
+            background-color:deeppink;
+        }
     </style>
 
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            $('#myTable').DataTable({
+            "scrollX" : true});
             //$("#myTable_wrapper").addClass("");
             Chart.defaults.global.legend.display = false;
             //Chart.defaults.global.defaultFontColor = 'white';
@@ -423,7 +428,7 @@
             <asp:Image CssClass="logo" runat="server" ImageUrl="https://www.nadhifabeauty.com/wp-content/uploads/2019/07/logo-baru-nadhifa.png" />
         </div>
         <div class="separator"></div>
-        <div class="col-md-12 text-center">
+        <div class="col-md-12">
             <h1><span class="label label-warning text-center !important">Upload Excel File (.xlsx)</span>
                 </h1>
         </div>
@@ -431,21 +436,20 @@
             <%--<h1><span class="label label-info">Upload file excel (xlsx)</span></h1>
             <br />
             <br />--%>
-            <asp:FileUpload ID="FileUpload1" CssClass="text-right" style="margin:auto;"
+            <asp:FileUpload ID="FileUpload1" CssClass="text-right"
                 runat="server"></asp:FileUpload>
 
             <asp:Button ID="UploadButton"
                 Text="Upload file"
                 OnClick="UploadButton_Click"
                 CssClass="btn btn-primary btn-lg btn-block"
-                style="margin:auto;"
                 runat="server"></asp:Button>
             <br />
             <br />
-            <asp:Label ID="UploadStatusLabel"
+            <asp:Label CssClass="label label-danger" ID="UploadStatusLabel"
                 runat="server">
             </asp:Label>
-            <asp:Label ID="exceltosqlException" runat="server">
+            <asp:Label CssClass="label label-danger" ID="exceltosqlException" runat="server">
             </asp:Label>
         </div>
 
